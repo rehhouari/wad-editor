@@ -13,7 +13,7 @@ It's a redesign of [Joe's Wad Editor](http://j0e.io/tools/wad-editor) with extra
 - Export WAD3 files to ZIP +
 - Offline PWA +
 
-## https://online-wad-editor.vercel.app
+## https://wad-editor.vercel.app
 
 ## Credits
 
