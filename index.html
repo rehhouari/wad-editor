@@ -1,52 +1,366 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Joe's Wad Editor</title>
-    <script type="text/javascript" src="jszip.min.js"></script>
-    <script type="text/javascript" src="FileSaver.min.js"></script>
-    <script type="text/javascript" src="script.js"></script>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  
-  <body>
-    <h1>Joe's WAD Editor</h1>
-    <h3>Create or modify Half-Life WAD3 files</h3>
+	<head>
+		<title>Joe's Online WAD Editor & Creator</title>
+		<script src="/js/windicss.js" defer init></script>
+		<script type="module" src="/js/main.js"></script>
+	</head>
 
-    <table>
-      <tr>
-        <td>
-          
-          <br><br>
-          Open WAD
-          <input id="upload" type="file" oninput="upload()" />
-          <br><br>
-          Add Image
-          <input id="add_img" type="file" accept=".bmp, .png, .jpg, .gif" onchange="add_img_handler()" />
-          <br><br>
-          Rename (12 chars MAX)
-          <input id="rename" type="text" oninput="rename()"></input>
-          <br><br>
-          <div style="text-align:center;">
-            <button onclick="buildWad()" id="download">Save WAD</button>
-            <button onclick="exportZip()" id="export">Export to ZIP</button>
-            <button onclick="removeTexture()" id="remove">Delete</button>
-          </div>
-          <br>
-        </td>
-
-        <td class="center">
-          <select id="texture_list" size="18" onchange="onSelectTexture()"></select>
-        </td>
-        <td class="center">
-          <canvas width="0" height="0" id="viewport"></canvas>
-        </td>
-      </tr>
-
-      <tr>
-        <td colspan=3>
-          <input id="status" type="text" value="Status: Ready."></input>
-        </td>
-      </tr>
-    </table>
-    You can contribute to this project via github <a href="https://github.com/josephfortune/wad-editor">here</a>.   
-  </body>
+	<body class="bg-cool-gray-400 px-4 h-screen pt-4 block" hidden>
+		<!-- Main App -->
+		<div
+			id="app"
+			class="
+				flex
+				flex-col
+				md:w-full
+				sm:w-full
+				lg:w-md
+				xl:w-xl
+				2xl:w-2xl
+				mx-auto
+				!max-w-full
+				rounded-t-xl
+				bg-cool-gray-800
+				text-white
+				tracking-tighter
+				text-center
+				shadow-lg
+			"
+		>
+			<!-- Header -->
+			<div class="p-4 flex-col">
+				<p class="text-xl font-bold my-2">Joe's Online WAD Editor</p>
+				<p class="my-1 text-sm">
+					Create, modify, and export Half-Life WAD3 files.
+				</p>
+			</div>
+			<!-- Screens -->
+			<div class="flex-col flex-grow bg-gray-100 text-cool-gray-800 children:p-4 py-4">
+				<!-- File Upload Zone Screen -->
+				<div v-if="!uploaded && !error">
+					<h5>Drag & drop a Half-Life <span class="text-gray-600">.WAD</span><sup><a target="_blank" href="https://www.j0e.io/tutorials/wad3-format/">[1]</a></sup><sup><a target="_blank" href="https://developer.valvesoftware.com/wiki/WAD">[2]</a></sup> file or click to select it</h5>
+					<input
+						id="upload"
+						type="file"
+						@input="onUpload"
+						class="max-w-full px-10 py-10 transparent bg-white rounded-lg shadow-lg"
+					/>
+					<h5>Or, create a new one</h5>
+					<input
+						type="text"
+						id="new_wad_name"
+						minlength="1"
+						v-model="newFileName"
+						autofocus
+						class="h-8 p-2 max-w-full
+							rounded-lg
+							font-semibold
+							transition
+							ring-2
+							ring-cool-gray-300
+							focus:outline-none
+							focus:ring-cool-gray-800
+							focus:ring-inset"
+					/>
+					<button
+						class="
+							h-8
+							px-3
+							font-semibold
+							transition
+							rounded-lg
+							enabled:cursor-pointer
+							bg-gray-300
+							focus:outline-none
+							focus:ring-2
+							focus:ring-cool-gray-800
+							focus:ring-inset
+							enabled:text-gray-800
+							hover:text-cool-gray-800
+						"
+						@click="createEmpty()"
+						type="button"
+					>
+						Create
+					</button>
+				</div>
+				<!-- Error Screen -->
+				<div v-if="error">
+					<p class="mt-0 text-lg font-bold">Error</p>
+					<p class="text-md my-8">{{error}}</p>
+					<button
+						class="
+							h-8
+							px-3
+							font-semibold
+							transition
+							rounded-lg
+							enabled:cursor-pointer
+							bg-gray-300
+							focus:outline-none
+							focus:ring-2
+							focus:ring-cool-gray-800
+							focus:ring-inset
+							enabled:text-gray-800
+							hover:text-cool-gray-800
+						"
+						@click="clearError()"
+						type="button"
+					>
+						Go Back
+					</button>
+				</div>
+				<!-- WAD Screen -->
+				<div v-if="uploaded && !error" class="flex flex-col space-y-3 pt-0">
+					<div class="flex flex-row space-x-2">
+						<p class="text-sm flex-col flex-grow text-left">Selected File: <span class="font-bold text-md">{{fileName}}</span></p>
+						<div class="flex-col self-center">
+							<button
+								:disabled="interfaceDisabled"
+								class="
+								h-8
+								px-2
+								font-semibold
+								transition
+								rounded-lg
+								enabled:cursor-pointer
+								bg-gray-300
+								focus:outline-none
+								focus:ring-2
+								focus:ring-cool-gray-800
+								focus:ring-inset
+								enabled:text-gray-800
+								hover:text-cool-gray-800
+								"
+								@click="reset()"
+								type="button"
+							>
+								Close
+							</button>
+						</div>
+					</div>
+					<hr class="border-b-2 h-1 w-full !mt-0 border-gray-300">
+					<div class="flex flex-row">
+						<div class="self-start flex-col flex-grow text-left">
+							<button
+								:disabled="interfaceDisabled"
+								class="
+								h-8
+								px-3
+								font-semibold
+								transition
+								rounded-lg
+								enabled:cursor-pointer
+								bg-gray-300
+									focus:outline-none
+									focus:ring-2
+									focus:ring-cool-gray-800
+									focus:ring-inset
+									enabled:text-gray-800
+									hover:text-cool-gray-800
+									"
+									@click="saveZip()"
+									type="button"
+									>
+									Save ZIP
+							</button>
+							<button
+								:disabled="interfaceDisabled"
+								class="
+								h-8
+								px-3
+								font-semibold
+								transition
+								rounded-lg
+								enabled:cursor-pointer
+								bg-gray-300
+								focus:outline-none
+								focus:ring-2
+								focus:ring-cool-gray-800
+								focus:ring-inset
+								enabled:text-gray-800
+								hover:text-cool-gray-800
+								"
+								@click="saveWad()"
+								type="button"
+								>
+								Save WAD
+							</button>
+						</div>
+						<div class="text-right self-end">
+						<input id="add_img" type="file" accept=".bmp, .png, .jpg, .gif" @change="addTexture(event)" hidden>
+						<button
+							:disabled="interfaceDisabled"
+							class="
+							self-end
+							h-8
+							px-3
+							font-semibold
+							transition
+							rounded-lg
+							enabled:cursor-pointer
+							bg-gray-300
+							focus:outline-none
+							focus:ring-2
+							focus:ring-cool-gray-800
+							focus:ring-inset
+							enabled:text-gray-800
+							hover:text-cool-gray-800
+							"
+							@click="add_img.click()"
+							type="button"
+							>
+							Add Texture
+						</button>
+						</div>
+					</div>
+					<!-- Canvas Display -->
+					<div class="rounded-lg bg-white shadow-lg p-2 w-full" v-if="textures.length">
+						<div class="flex flex-row m-2">
+							<!-- Renaming -->
+							<div class="flex-col flex-grow text-left">
+								<input
+									:disabled="interfaceDisabled"
+									type="text"
+									name="rename"
+									id="rename"
+									:placeholder="textures[selected]?.name"
+									maxlength="12"
+									minlength="1"
+									v-model="renameInput"
+									v-effect="$el.value = textures[selected]?.name"
+									autofocus
+									class="h-8 p-2 w-32 max-w-full
+										rounded-lg
+										font-semibold
+										transition
+										ring-2
+										ring-cool-gray-300
+										focus:outline-none
+										focus:ring-cool-gray-800
+										focus:ring-inset"
+									/>
+								<button
+									:disabled="interfaceDisabled || renameInput == textures[selected]?.name || renameInput < 1 || renameInput > 12"
+									class="
+									self-end
+									h-8
+									px-3
+									font-semibold
+									transition
+									rounded-lg
+									enabled:cursor-pointer
+									bg-gray-300
+									focus:outline-none
+									focus:ring-2
+									focus:ring-cool-gray-800
+									focus:ring-inset
+									enabled:text-gray-800
+									enabled:hover:text-cool-gray-800
+									"
+									@click="rename()"
+									type="button"
+									>
+									Rename
+								</button>
+							</div>
+							<!-- Deleting -->
+							<div class="flex-col text-right">
+								<button
+									:disabled="interfaceDisabled"
+									class="
+										h-8
+										px-3
+										font-semibold
+										transition
+										rounded-lg
+										enabled:cursor-pointer
+										bg-gray-300
+										focus:outline-none
+										focus:ring-2
+										focus:ring-cool-gray-800
+										focus:ring-inset
+										enabled:text-gray-800
+										hover:text-cool-gray-800
+									"
+									@click="remove()"
+									type="button"
+								>
+									Delete
+								</button>
+							</div>
+						</div>
+					</div>
+					<canvas
+						v-effect="displayTexture($el)"
+						width="20"
+						height="20"
+						id="viewport"
+						class="m-1 mt-2 mx-auto"
+						style="image-rendering:pixelated"
+					></canvas>
+					<!-- Texture List-->
+					<div class="rounded-lg bg-white shadow-lg flex-col" v-if="textures.length > 0">
+						<input
+							:disabled="interfaceDisabled"
+							type="search"
+							name="search_textures"
+							v-model="search"
+							class="w-full bg-white p-3 font-semibold my-2 focus:outline-none "
+							placeholder="Search Textures"
+							v-init="focus()" />
+						<select
+							:disabled="interfaceDisabled"
+							id="texture_list"
+							size="5"
+							@change="selected = $el.selectedIndex"
+							v-effect="$el.selectedIndex = selected"
+							class="
+								w-full
+								text-center
+								children:p-4 children:font-semibold
+								focus:outline-none
+							"
+						>
+							<option
+								:value="entry.name"
+								:name="entry.name"
+								v-for="entry in getEntries()"
+								:hidden="entry.name.toLowerCase().includes(search.toLowerCase().replace(' ', '').trim()) == false"
+							>
+								{{entry.name}}
+							</option>
+						</select>
+					</div>
+					<!-- No texture -->
+					<div class="rounded-lg bg-white shadow-lg flex-col" v-if="!textures.length">
+						<h3>No Textures.</h3>
+					</div>
+				</div>
+			</div>
+			<!-- Footer -->
+			<div class="p-4 flex-col">
+				<p class="text-sm">
+					Originally by
+					<a href="https://github.com/josephfortune/" class="text-gray-300"
+						>Joe Fortune</a
+					>.
+					<br />
+					Forked by
+					<a href="https://github.com/rehhouari" class="text-gray-300"
+						>Rafik @rehhouari</a
+					>.
+					<br />
+					<a
+						href="https://github.com/rehhouari/wad-editor"
+						class="text-gray-300 no-underline"
+						>Contribute on Github</a
+					>
+				</p>
+			</div>
+		</div>
+		<script src="/js/jszip.min.js"></script>
+		<script src="/js/FileSaver.min.js"></script>
+	</body>
 </html>
