@@ -9,7 +9,7 @@ It's a redesign of [Joe's Wad Editor](http://j0e.io/tools/wad-editor) with extra
 - Create new WAD3 files and add your images to them +
 - Edit existing WAD3 files
 - Search images + in the file and display them directly 
-- Delete and add images from antritrid to WAD3 files
+- Delete and add images from and to WAD3 files
 - Export WAD3 files to ZIP +
 - Offline PWA +
 
