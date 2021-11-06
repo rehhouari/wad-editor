@@ -11,7 +11,6 @@ It's a redesign of [Joe's Wad Editor](http://j0e.io/tools/wad-editor) with extra
 - Search images + in the file and display them directly 
 - Delete and add images from and to WAD3 files
 - Export WAD3 files to ZIP +
-- Offline PWA +
 
 ## https://wad-editor.vercel.app
 
