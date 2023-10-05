@@ -2,7 +2,7 @@
 
 Create, modify, and export Half-Life WAD3 files in your browser.
 
-It's a redesign of [Joe's Wad Editor](http://j0e.io/tools/wad-editor) with extra functionality.
+It's a reactive redesign of [Joe's Wad Editor](http://j0e.io/tools/wad-editor) with extra functionality.
 
 ## Features
 
