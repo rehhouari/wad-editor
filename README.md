@@ -6,7 +6,7 @@ It's a reactive redesign of [Joe's Wad Editor](http://j0e.io/tools/wad-editor) w
 
 ## Features
 
-- Create new WAD3 files and add your images to them +
+- Create new WAD3 files and add your images to them
 - Edit existing WAD3 files
 - Search images + in the file and display them directly 
 - Delete and add images from and to WAD3 files
