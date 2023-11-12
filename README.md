@@ -1,4 +1,4 @@
-# Online WAD Editor
+# Waditor: Online WAD Editor
 
 Create, modify, and export Half-Life WAD3 files in your browser.
 
@@ -12,7 +12,7 @@ It's a reactive redesign of [Joe's Wad Editor](http://j0e.io/tools/wad-editor) w
 - Delete and add images from and to WAD3 files
 - Export WAD3 files to ZIP +
 
-## https://wad-editor.vercel.app
+## https://waditor.pigeonivy.com
 
 ## Credits
 

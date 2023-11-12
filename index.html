@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Create, modify, and export Half-Life WAD3 files online in the browser."
+      content="Waditor helps you create, modify, and export Half-Life WAD3 (.wad) files online in the browser."
     />
-    <meta name="author" content="rehhouari" />
-    <title>Joe's Online WAD Editor & Creator</title>
+    <meta name="author" content="@rehhouari" />
+    <title>Waditor: Online WAD Editor & Creator</title>
     <script src="/js/windicss.js" defer init></script>
     <script type="module" src="/js/main.js"></script>
   </head>
@@ -22,9 +22,9 @@
     >
       <!-- Header -->
       <div class="p-4 flex-col">
-        <p class="text-xl font-bold my-2">Joe's Online WAD Editor</p>
+        <p class="text-xl font-bold my-2">Waditor: Online WAD Editor</p>
         <p class="my-1 text-sm">
-          Create, modify, and export Half-Life WAD3 files.
+          Create, modify, and export Half-Life (GoldSrc) WAD3 files.
         </p>
       </div>
       <!-- Screens -->
@@ -34,7 +34,7 @@
         <!-- File Upload Zone Screen -->
         <div v-if="!uploaded && !error">
           <h5>
-            Drag & drop a Half-Life <span class="text-gray-600">.WAD</span
+            Drag & drop a Half-Life <span class="text-gray-600">WAD3</span
             ><sup
               ><a
                 target="_blank"
@@ -233,21 +233,21 @@
         </div>
       </div>
       <!-- Footer -->
-      <div class="p-4 flex-col">
-        <p class="text-sm">
-          Originally by
-          <a href="https://j0e.io/tools/wad-editor" class="text-gray-300"
-            >Joe Fortune</a
-          >.
-          <br />
-          Redesigned by
+      <div class="p-4">
+        <p class="text-sm flex-col space-y-2">
+          by
           <a href="https://github.com/rehhouari" class="text-gray-300"
             >Rafik @rehhouari</a
           >.
           <br />
+          Forked from
+          <a href="https://j0e.io/tools/wad-editor" class="text-gray-300"
+            >Joe Fortune's WAD editor</a
+          >.
+          <br />
           <a
             href="https://github.com/rehhouari/wad-editor"
-            class="text-gray-300 no-underline"
+            class="text-gray-300 mt-2 no-underline"
             >Contribute on GitHub</a
           >
         </p>
