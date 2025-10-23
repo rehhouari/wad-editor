@@ -12,7 +12,7 @@ It's a reactive redesign of [Joe's Wad Editor](http://j0e.io/tools/wad-editor) w
 - Delete and add images from and to WAD3 files
 - Export WAD3 files to ZIP +
 
-## https://waditor.pigeonivy.com
+## https://waditor.pages.dev
 
 ## Credits
 
